@@ -16,7 +16,7 @@ export class BirdPlayer{
         this.src = [];
 
         if (typeof list === 'string')
-            this.src.push({name: 'one', url: list})
+            this.src.push(list)
     }
 
     play() {
@@ -24,7 +24,7 @@ export class BirdPlayer{
             return this.audio.play();
 
         for (let item of this.src) {
-            this.audio.src = item.url;
+            this.audio.src = item;
             this.audio.play();
         }
         
