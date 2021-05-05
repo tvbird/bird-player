@@ -1,0 +1,84 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>User Application</title>
+
+        <!-- Google Fonts -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+
+        <!-- CSS Reset -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+
+        <!-- Milligram CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+
+        <style>
+            .mt-1 {
+                margin-top: 5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="mt-1 container">
+            <div class="row">
+
+                <div class="column">
+                    <h2>Тест плеера</h2>
+                    <p>Тестирование плеера на разные форматы:  &nbsp; &nbsp;
+                        <a href="#" id="play">Включить</a> &nbsp; &nbsp;
+                        <a href="#" id="pause">Пауза</a> &nbsp; &nbsp;
+                        <a href="#" id="stop">Стоп</a></p>
+
+                    <div class="row">
+                        <div class="column">
+                            <a href="#" id="mp3">Загрузить mp3 поток</a>
+                        </div>
+                        <div class="column">
+                            <a href="#" id="aacp">Загрузить aacp поток</a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div id="player"></div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function(){
+                let player = new BirdPlayer('player');
+
+                document.getElementById('mp3').addEventListener('click', e => {
+                    e.preventDefault();
+                    player.url('http://air.radiorecord.ru:805/rr_320');
+                    player.play();
+                });
+
+
+                document.getElementById('aacp').addEventListener('click', e => {
+                    e.preventDefault();
+                    player.url('http://ais-sa3.cdnstream1.com/2283_96.aac');
+                    player.play();
+                });
+
+                document.getElementById('play').addEventListener('click', e => {
+                    e.preventDefault();
+                    player.onlyPlay();
+                });
+
+                document.getElementById('pause').addEventListener('click', e => {
+                    e.preventDefault();
+                    player.pause();
+                });
+
+                document.getElementById('stop').addEventListener('click', e => {
+                    e.preventDefault();
+                    player.stop();
+                });
+            });
+        </script>
+    </body>
+</html>
