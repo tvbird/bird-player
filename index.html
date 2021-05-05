@@ -8,48 +8,74 @@
         <!-- Google Fonts -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
 
-        <!-- CSS Reset -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
-
-        <!-- Milligram CSS -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
 
         <style>
-            .mt-1 {
-                margin-top: 5rem;
+            .app {
+                margin-top: 2rem;
+            }
+            .container {
+                margin: 0 auto;
+                max-width: 1280px;
+            }
+            body {
+                font-family:-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif !important;
+            }
+            blockquote {
+                background-color: #F7F8F9;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                font-weight: 300 !important;
             }
         </style>
     </head>
     <body>
-        <div class="mt-1 container">
-            <div class="row">
+        <div class="app">
+            <div class="container">
 
-                <div class="column">
+            <div class="columns mb-2">
+                <div class="column col-12">
                     <h2>Тест плеера</h2>
-                    <p>Тестирование плеера на разные форматы:  &nbsp; &nbsp;
-                        <a href="#" id="play">Включить</a> &nbsp; &nbsp;
-                        <a href="#" id="pause">Пауза</a> &nbsp; &nbsp;
-                        <a href="#" id="stop">Стоп</a></p>
-
-                    <div class="row">
-                        <div class="column">
-                            <a href="#" id="mp3">Загрузить mp3 поток</a>
-                        </div>
-                        <div class="column">
-                            <a href="#" id="aacp">Загрузить aacp поток</a>
-                        </div>
-                    </div>
-
+                    <blockquote> Тестирование плеера на разные форматы:&nbsp;&nbsp;
+                        <a href="#" id="play">Включить</a>  &nbsp;&nbsp;
+                        <a href="#" id="pause">Пауза</a>  &nbsp;&nbsp;
+                        <a href="#" id="stop">Стоп</a></pre>
                 </div>
-
             </div>
 
+            <div class="columns col-gapless">
+                <div class="column col-6">
+                    <h4>Тест потоков</h4>
+                    <a href="#" id="mp3">Загрузить mp3 поток</a><br>
+                    <a href="#" id="aacp">Загрузить aacp поток</a>
+                </div>
+
+                <div class="column col-6">
+                    <h4>Отладка событий</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, explicabo.</p>
+                </div>
+            </div>
+
+
+
             <div id="player"></div>
+        </div>
         </div>
 
         <script>
             document.addEventListener('DOMContentLoaded', function(){
                 let player = new BirdPlayer('player');
+
+                player.on('wait', () => console.warn('wait'));
+                player.on('load', () => console.warn('load'));
+                player.on('pause', () => console.warn('pause'));
+                player.on('stop', () => console.warn('stop'));
+                player.on('timeupdate', () => console.warn('timeupdate'));
+                player.on('play', (e) => {
+                    console.warn('play');
+                    console.warn(e.url);
+                });
 
                 document.getElementById('mp3').addEventListener('click', e => {
                     e.preventDefault();
