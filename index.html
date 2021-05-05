@@ -12,6 +12,10 @@
         <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
 
         <style>
+            #log {
+                overflow: auto;
+                height: 50vh;
+            }
             .app {
                 margin-top: 2rem;
             }
@@ -37,10 +41,10 @@
             <div class="columns mb-2">
                 <div class="column col-12">
                     <h2>Тест плеера</h2>
-                    <blockquote> Тестирование плеера на разные форматы:&nbsp;&nbsp;
+                    <blockquote>Тестирование плеера на разные форматы:&nbsp;&nbsp;
                         <a href="#" id="play">Включить</a>  &nbsp;&nbsp;
                         <a href="#" id="pause">Пауза</a>  &nbsp;&nbsp;
-                        <a href="#" id="stop">Стоп</a></pre>
+                        <a href="#" id="stop">Стоп</a></blockquote>
                 </div>
             </div>
 
@@ -53,7 +57,7 @@
 
                 <div class="column col-6">
                     <h4>Отладка событий</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, explicabo.</p>
+                    <p id="log">Ожидание</p>
                 </div>
             </div>
 
@@ -64,17 +68,22 @@
         </div>
 
         <script>
+            function log(name) {
+                const div = document.createElement('div');
+                div.innerHTML = name;
+                document.getElementById('log').appendChild(div);
+            }
+
             document.addEventListener('DOMContentLoaded', function(){
                 let player = new BirdPlayer('player');
 
-                player.on('wait', () => console.warn('wait'));
-                player.on('load', () => console.warn('load'));
-                player.on('pause', () => console.warn('pause'));
-                player.on('stop', () => console.warn('stop'));
-                player.on('timeupdate', () => console.warn('timeupdate'));
+                player.on('wait', () => log('wait'));
+                player.on('load', () => log('load'));
+                player.on('pause', () => log('pause'));
+                player.on('stop', () => log('stop'));
+                player.on('timeupdate', () => log('timeupdate'));
                 player.on('play', (e) => {
-                    console.warn('play');
-                    console.warn(e.url);
+                    log('play: ' + e.url);
                 });
 
                 document.getElementById('mp3').addEventListener('click', e => {
