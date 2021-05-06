@@ -1,15 +1,16 @@
-// import dependencies
-// import { concat } from '../util/string';
+import { isNumeric, convert, animateValue } from '../util/volume';
 
 /*!
- * on
+ * Bird Player
+ *    on
  *    wait: ожидание
  *    load: загрука
- *    play: плеер включен
+ *    play[url]: плеер включен
  *    time: идет воспроизведение (Отправляется, когда изменяется значение атрибута currentTime)
  *    pause: пауза
  *    stop: плеер остановлен и выгружены url
  *    error: ошибка при воспроизведении
+ *    volume[vol]: текущая громкость (0 до 100)
  */
 
 export class BirdPlayer{
@@ -20,6 +21,7 @@ export class BirdPlayer{
     constructor(el){
         this.audio = document.createElement('audio');
         this.audio.id = "bird-player";
+        this.audio.volume = 0.5;
 
         this.src = [];
         this.el = document.getElementById(el);
@@ -86,6 +88,30 @@ export class BirdPlayer{
     }
 
     /**
+     * Установка громкости (0 до 100)
+     * @param val
+     */
+    volume(val) {
+        if (isNumeric(val)) {
+            let vol = parseInt(val);
+
+            if (vol >= 0 && vol <= 100)
+                this.audio.volume = convert(vol);
+        }
+    }
+
+    /**
+     * Плавное изменение звука
+     *
+     * @param to  - в какую громкость нужно перевести
+     * @param dur - скорость изменения громкости
+     */
+    fade(to, dur = 700) {
+        let vol = convert(this.audio.volume, true);
+        animateValue(vol, parseInt(to), dur, (e) => this.volume(e));
+    }
+
+    /**
      * Вызов события
      *
      * @param name
@@ -123,5 +149,6 @@ export class BirdPlayer{
             }
         });
         this.audio.addEventListener('playing', () => this.emit('play', {url: this.audio.src}));
+        this.audio.addEventListener('volumechange', () => this.emit('volume', {volume: convert(this.audio.volume, true)}));
     }
 }

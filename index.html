@@ -7,61 +7,41 @@
 
         <!-- Google Fonts -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
-
-        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
-        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
-
-        <style>
-            #log {
-                overflow: auto;
-                height: 50vh;
-            }
-            .app {
-                margin-top: 2rem;
-            }
-            .container {
-                margin: 0 auto;
-                max-width: 1280px;
-            }
-            body {
-                font-family:-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif !important;
-            }
-            blockquote {
-                background-color: #F7F8F9;
-            }
-            h1, h2, h3, h4, h5, h6 {
-                font-weight: 300 !important;
-            }
-        </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" type="text/css" >
+        <link rel="stylesheet" href="/style.css?1">
     </head>
     <body>
         <div class="app">
             <div class="container">
 
-            <div class="columns mb-2">
-                <div class="column col-12">
-                    <h2>Тест плеера</h2>
-                    <blockquote>Тестирование плеера на разные форматы:&nbsp;&nbsp;
-                        <a href="#" id="play">Включить</a>  &nbsp;&nbsp;
-                        <a href="#" id="pause">Пауза</a>  &nbsp;&nbsp;
-                        <a href="#" id="stop">Стоп</a></blockquote>
-                </div>
+            <div class="mb-2">
+                <h2>Тест плеера</h2>
+                <blockquote class="col-12">
+                    <div>
+                        Тестирование плеера на разные форматы:&nbsp;&nbsp;
+                            <a href="#" id="play">Включить</a>  &nbsp;&nbsp;
+                            <a href="#" id="pause">Пауза</a>  &nbsp;&nbsp;
+                            <a href="#" id="stop">Стоп</a>
+                    </div>
+                    <div>
+                        Громкость: <strong id="vol"></strong> &nbsp;&nbsp;
+                        <input type="range" min="0" max="100" id="volume">
+                    </div>
+                </blockquote>
             </div>
 
-            <div class="columns col-gapless">
-                <div class="column col-6">
-                    <h4>Тест потоков</h4>
-                    <a href="#" id="mp3">Загрузить mp3 поток</a><br>
-                    <a href="#" id="aacp">Загрузить aacp поток</a>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Тест потоков</h3>
+                    <p><a href="#" id="mp3">Загрузить mp3 поток</a></p>
+                    <p><a href="#" id="aacp">Загрузить aacp поток</a></p>
                 </div>
 
-                <div class="column col-6">
-                    <h4>Отладка событий</h4>
+                <div class="col-md-6">
+                    <h3>Отладка событий</h3>
                     <p id="log">Ожидание</p>
                 </div>
             </div>
-
-
 
             <div id="player"></div>
         </div>
@@ -74,44 +54,43 @@
                 document.getElementById('log').appendChild(div);
             }
 
+
+            function click(id, call) {
+                document.getElementById(id).addEventListener('click', e => {
+                    e.preventDefault();
+                    return call(e);
+                });
+            }
+
             document.addEventListener('DOMContentLoaded', function(){
                 let player = new BirdPlayer('player');
+                const vol = document.getElementById('vol');
 
                 player.on('wait', () => log('wait'));
                 player.on('load', () => log('load'));
                 player.on('pause', () => log('pause'));
                 player.on('stop', () => log('stop'));
                 player.on('timeupdate', () => log('timeupdate'));
-                player.on('play', (e) => {
-                    log('play: ' + e.url);
-                });
+                player.on('play', (e) => log('play: ' + e.url));
+                player.on('volume', (e) => vol.innerText = e.volume);
 
-                document.getElementById('mp3').addEventListener('click', e => {
-                    e.preventDefault();
+                click('mp3', () => {
                     player.url('http://air.radiorecord.ru:805/rr_320');
                     player.play();
                 });
 
-
-                document.getElementById('aacp').addEventListener('click', e => {
-                    e.preventDefault();
+                click('aacp', () => {
                     player.url('http://ais-sa3.cdnstream1.com/2283_96.aac');
                     player.play();
                 });
 
-                document.getElementById('play').addEventListener('click', e => {
-                    e.preventDefault();
-                    player.onlyPlay();
-                });
+                click('play', () => player.onlyPlay());
+                click('pause', () => player.pause());
+                click('stop', () => player.stop());
 
-                document.getElementById('pause').addEventListener('click', e => {
-                    e.preventDefault();
-                    player.pause();
-                });
 
-                document.getElementById('stop').addEventListener('click', e => {
-                    e.preventDefault();
-                    player.stop();
+                document.getElementById('volume').addEventListener('change', e => {
+                    player.fade(e.target.value);
                 });
             });
         </script>
