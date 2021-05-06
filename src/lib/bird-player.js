@@ -2,7 +2,7 @@ import { isNumeric, convert, animateValue } from '../util/volume';
 
 /*!
  * Bird Player
- *    on
+ *  on
  *    wait: ожидание
  *    load: загрука
  *    play[url]: плеер включен
@@ -10,6 +10,7 @@ import { isNumeric, convert, animateValue } from '../util/volume';
  *    pause: пауза
  *    stop: плеер остановлен и выгружены url
  *    error: ошибка при воспроизведении
+ *    broken[url]: ошибка при воспроизведении
  *    volume[vol]: текущая громкость (0 до 100)
  */
 
@@ -39,7 +40,9 @@ export class BirdPlayer{
         this.src = [];
 
         if (typeof list === 'string')
-            this.src.push(list)
+            this.src.push(list);
+        else
+            this.src = list;
     }
 
     /**
@@ -48,19 +51,24 @@ export class BirdPlayer{
      */
     play() {
         if (this.state === "pause" && this.src.length)
-            return this.audio.play();
+            return this.onlyPlay();
 
         for (let item of this.src) {
             this.audio.src = item;
-            this.audio.play();
+            this.onlyPlay(item);
         }
     }
 
     /**
      * Запуск плеера (с существующими потоками)
      */
-    onlyPlay() {
-        this.audio.play();
+    async onlyPlay(src) {
+        try {
+            await this.audio.play();
+        }
+        catch (e) {
+            this.emit('broken', {url: src || this.audio.src});
+        }
     }
 
 
@@ -102,7 +110,7 @@ export class BirdPlayer{
     /**
      * Плавное изменение звука
      *
-     * @param to  - в какую громкость нужно перевести
+     * @param to  - в какую громкость нужно перевести (0-100)
      * @param dur - скорость изменения громкости
      */
     fade(to, dur = 700) {
@@ -133,10 +141,14 @@ export class BirdPlayer{
      * @param call
      */
     on(name, call) {
-        this.el.addEventListener(name, (e) => call(e.detail));
+        this.el.addEventListener(name, (e) => call(e.detail || e));
     }
 
 
+    /**
+     * Перенаправление событий в emit
+     * @private
+     */
     __bind() {
         const ev = [
             {load: 'load'},
@@ -144,8 +156,7 @@ export class BirdPlayer{
             {timeupdate: 'time'},
             {ended: 'stop'},
             {loadstart: 'load'},
-            {error: 'error'},
-            // {stalled: 'error'}
+            {error: 'error'}
         ];
 
         ev.forEach((item) => {

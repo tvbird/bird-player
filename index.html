@@ -35,6 +35,7 @@
                     <p><a href="#" id="aacp">Загрузить AAC</a></p>
                     <p><a href="#" id="ogg">Загрузить OGG</a></p>
                     <p><a href="#" id="err">Загрузить с ошибкой</a></p>
+                    <p><a href="#" id="multi">Загрузить несколько потоков</a></p>
                 </div>
 
                 <div class="col-md-6">
@@ -75,6 +76,16 @@
                 player.on('volume', (e) => vol.innerText = e.volume);
                 player.on('progress', () => log(progress));
                 player.on('error', () => log('error'));
+                player.on('broken', (e) => log('broken: ' + e.url));
+
+                click('multi', () => {
+                    player.url([
+                        'http://online.sokal.lviv.ua:8000/sokalfm256.mp3',
+                        'http://online.sokal.lviv.ua:8000/sokalfm128.mp3',
+                        'http://online.sokal.lviv.ua:8000/novydvir256.mp3']);
+                    player.play();
+                });
+
 
                 click('mp3', () => {
                     player.url('http://air.radiorecord.ru:805/rr_320');
