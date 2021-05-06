@@ -63,3 +63,7 @@ a:hover:after {
 	transform: translateY(0);
 	opacity: 1;
 }
+
+.mt {
+	margin-top: 1em;
+}

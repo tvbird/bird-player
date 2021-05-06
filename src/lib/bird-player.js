@@ -52,7 +52,6 @@ export class BirdPlayer{
 
         for (let item of this.src) {
             this.audio.src = item;
-            this.emit('load');
             this.audio.play();
         }
     }
@@ -140,7 +139,13 @@ export class BirdPlayer{
 
     __bind() {
         const ev = [
-            {load: 'load'}, {pause: 'pause'}, {error: 'error'}, {timeupdate: 'time'}, {ended: 'stop'}
+            {load: 'load'},
+            {pause: 'pause'},
+            {timeupdate: 'time'},
+            {ended: 'stop'},
+            {loadstart: 'load'},
+            {error: 'error'},
+            // {stalled: 'error'}
         ];
 
         ev.forEach((item) => {
