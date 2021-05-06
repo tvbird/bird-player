@@ -64,19 +64,25 @@
             }
 
             document.addEventListener('DOMContentLoaded', function(){
-                let player = new BirdPlayer('player');
+                let player = new BirdPlayer({
+                    // el: 'player',
+                    // volume: 70,
+                    // src: ['https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3']
+                });
+
                 const vol = document.getElementById('vol');
 
                 player.on('wait', () => log('wait'));
                 player.on('load', () => log('load'));
                 player.on('pause', () => log('pause'));
                 player.on('stop', () => log('stop'));
-                player.on('timeupdate', () => log('timeupdate'));
+                player.on('time', () => log('time'));
                 player.on('play', (e) => log('play: ' + e.url));
-                player.on('volume', (e) => vol.innerText = e.volume);
                 player.on('progress', () => log(progress));
                 player.on('error', () => log('error'));
-                player.on('broken', (e) => log('broken: ' + e.url));
+                player.on('broken', (e) => log('broken: ' + e.url + ' ' + e.msg));
+                player.on('volume', (e) => vol.innerText = e.volume);
+
 
                 click('multi', () => {
                     player.url([
@@ -103,12 +109,13 @@
                 });
 
                 click('err', () => {
+                    player.url('http://video.tvr.by:8000/belfm');
                     // player.url('http://online.sokal.lviv.ua:8000/sokalfm256.mp3');
-                    player.url('http://air.radiorecord.ru:23805/rr_320');
+                    // player.url('http://air.radiorecord.ru:23805/rr_320');
                     player.play();
                 });
 
-                click('play', () => player.onlyPlay());
+                click('play', () => player.play());
                 click('pause', () => player.pause());
                 click('stop', () => player.stop());
 

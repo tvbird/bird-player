@@ -16,20 +16,38 @@ import { isNumeric, convert, animateValue } from '../util/volume';
 
 export class BirdPlayer{
 
+    // TODO try twice, Timeout
+
     /**
      * Конструктор
+     *
+     * el - id
+     * volume - громкость
+     * src - потоки
      */
-    constructor(el){
-        this.audio = document.createElement('audio');
-        this.audio.id = "bird-player";
-        this.audio.volume = 0.5;
-
+    constructor(params){
         this.src = [];
+
+        const ID = 'bird-player';
+        let el = (params && params.el) ? params.el : ID;
+        if (el === ID && !document.getElementById(ID)) {
+            let div = document.createElement('div');
+            div.id = ID;
+            div.style.display = 'none';
+            document.body.appendChild(div);
+        }
+
         this.el = document.getElementById(el);
+
+        this.audio = document.createElement('audio');
+        this.audio.id = el + "-bird-audio";
+        this.audio.volume = convert((params && params.volume) ? params.volume : 100);
+
+        if (params && params.src)
+            this.url(params.src);
 
         this.__bind();
         this.emit('wait');
-
     }
 
     /**
@@ -67,7 +85,7 @@ export class BirdPlayer{
             await this.audio.play();
         }
         catch (e) {
-            this.emit('broken', {url: src || this.audio.src});
+            this.emit('broken', {url: src || this.audio.src, msg: e});
         }
     }
 
@@ -76,7 +94,7 @@ export class BirdPlayer{
      * Пауза
      */
     pause() {
-        if (this.audio.src)
+        if (this.__isReady())
             this.audio.pause();
     }
 
@@ -85,7 +103,7 @@ export class BirdPlayer{
      * Остановка плеера с выгрузкой потоков
      */
     stop() {
-        if (this.audio.src) {
+        if (this.__isReady()) {
             this.audio.pause();
             this.audio.removeAttribute('src');
             this.audio.load();
@@ -118,6 +136,7 @@ export class BirdPlayer{
         animateValue(vol, parseInt(to), dur, (e) => this.volume(e));
     }
 
+
     /**
      * Вызов события
      *
@@ -145,6 +164,10 @@ export class BirdPlayer{
     }
 
 
+    __isReady() {
+        return this.audio.src && this.audio.readyState > 0;
+    }
+
     /**
      * Перенаправление событий в emit
      * @private
@@ -167,4 +190,12 @@ export class BirdPlayer{
         this.audio.addEventListener('playing', () => this.emit('play', {url: this.audio.src}));
         this.audio.addEventListener('volumechange', () => this.emit('volume', {volume: convert(this.audio.volume, true)}));
     }
+
+    /*  // loadedmeta
+    duration() {
+        let min = parseInt(this.audio.duration / 60, 10);
+        let sec = parseInt(this.audio.duration % 60);
+
+        return `${min}:${sec}`;
+    }*/
 }
