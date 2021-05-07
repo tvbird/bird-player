@@ -6,6 +6,8 @@
         <title>Bird Player</title>
 
         <!-- Google Fonts -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w==" crossorigin="anonymous" />
+
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css" type="text/css" >
         <link rel="stylesheet" href="/style.css?1">
@@ -22,8 +24,8 @@
                         <a href="#" id="pause">Пауза</a>  &nbsp;&nbsp;
                         <a href="#" id="stop">Стоп</a>
                 </div>
-                <div>
-                    Громкость: <strong id="vol"></strong> &nbsp;&nbsp;
+                <div class="flex">
+                    Громкость: &nbsp; <strong id="vol"></strong> &nbsp;&nbsp;&nbsp;
                     <input type="range" min="0" max="100" id="volume">
                 </div>
             </blockquote>
@@ -52,7 +54,15 @@
             function log(name) {
                 const div = document.createElement('div');
                 div.innerHTML = name;
-                document.getElementById('log').appendChild(div);
+
+                let log = document.getElementById('log');
+                log.appendChild(div);
+                log.scrollTop = log.scrollHeight;
+
+            }
+
+            function clearLog() {
+                document.getElementById('log').innerHTML = '';
             }
 
 
@@ -65,15 +75,15 @@
 
             document.addEventListener('DOMContentLoaded', function(){
                 let player = new BirdPlayer({
-                    // el: 'player',
-                    // volume: 70,
-                    // src: ['https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3']
+                    el: 'player',
+                    volume: 70,
+                    src: ['https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3'],
+                    twice: true
                 });
 
                 const vol = document.getElementById('vol');
 
                 player.on('wait', () => log('wait'));
-                player.on('load', () => log('load'));
                 player.on('pause', () => log('pause'));
                 player.on('stop', () => log('stop'));
                 player.on('time', () => log('time'));
@@ -82,7 +92,7 @@
                 player.on('error', () => log('error'));
                 player.on('broken', (e) => log('broken: ' + e.url + ' ' + e.msg));
                 player.on('volume', (e) => vol.innerText = e.volume);
-
+                player.on('load', () => log('load'));
 
                 click('multi', () => {
                     player.url([
@@ -94,24 +104,29 @@
 
 
                 click('mp3', () => {
+                    clearLog();
+                    // player.url('http://rsk-radio.inghetto.com:8000/radio_skit.mp3');
                     player.url('http://air.radiorecord.ru:805/rr_320');
                     player.play();
                 });
 
                 click('aacp', () => {
+                    clearLog();
                     player.url('http://ais-sa3.cdnstream1.com/2283_96.aac');
                     player.play();
                 });
 
                 click('ogg', () => {
+                    clearLog();
                     player.url('http://178.47.143.60:9400/skfm2');
                     player.play();
                 });
 
                 click('err', () => {
-                    player.url('http://video.tvr.by:8000/belfm');
+                    clearLog();
+                    // player.url('http://video.tvr.by:8000/belfm');
                     // player.url('http://online.sokal.lviv.ua:8000/sokalfm256.mp3');
-                    // player.url('http://air.radiorecord.ru:23805/rr_320');
+                    player.url('http://air.radiorecord.ru:23805/rr_320');
                     player.play();
                 });
 

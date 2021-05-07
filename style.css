@@ -2,6 +2,9 @@
 	overflow: auto;
 	height: 50vh;
 }
+.flex {
+	display: flex;
+}
 .app {
 	margin-top: 2rem;
 }
@@ -16,6 +19,7 @@ blockquote {
 	background-color: #F7F8F9;
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	padding: 10px 15px;
 	margin: 0;
 }

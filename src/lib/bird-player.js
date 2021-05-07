@@ -1,4 +1,5 @@
 import { isNumeric, convert, animateValue } from '../util/volume';
+import { Twice } from "./try-twice";
 
 /*!
  * Bird Player
@@ -10,20 +11,21 @@ import { isNumeric, convert, animateValue } from '../util/volume';
  *    pause: пауза
  *    stop: плеер остановлен и выгружены url
  *    error: ошибка при воспроизведении
- *    broken[url]: ошибка при воспроизведении
+ *    broken[url | msg]: ошибка при воспроизведении
  *    volume[vol]: текущая громкость (0 до 100)
  */
 
 export class BirdPlayer{
 
-    // TODO try twice, Timeout
+    // TODO Timeout
 
     /**
      * Конструктор
      *
-     * el - id
-     * volume - громкость
-     * src - потоки
+     * el        - id
+     * volume    - громкость
+     * src       - потоки
+     * twice     - пробовать воспроизвести поток дважды (если была ошибка)
      */
     constructor(params){
         this.src = [];
@@ -47,6 +49,10 @@ export class BirdPlayer{
             this.url(params.src);
 
         this.__bind();
+
+        // Инициализация плагинов
+        Twice.init(this.el, params, this);
+
         this.emit('wait');
     }
 
