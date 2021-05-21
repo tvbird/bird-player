@@ -25,7 +25,7 @@ export function isNumeric(value) {
  * @param duration - длинна в мс.
  * @param callback - callback
  */
-export function animateValue(from, to, duration, callback) {
+export function animateValue(from, to, duration, callback, finish) {
     if (from === to)
         return;
 
@@ -39,6 +39,7 @@ export function animateValue(from, to, duration, callback) {
         callback(current);
         if (current === to) {
             clearInterval(timer);
+            finish();
         }
     }, stepTime);
 }

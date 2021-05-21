@@ -1,2 +1,2 @@
-import { BirdPlayer as defaultExport } from './lib/bird-player';
-export default defaultExport;
+import { BirdPlayer } from './lib/bird-player';
+export default BirdPlayer;

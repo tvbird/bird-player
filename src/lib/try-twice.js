@@ -30,8 +30,6 @@ export const Twice = {
             this.url = url;
 
         if (this.count < 1) {
-            console.warn(this.count);
-            console.warn(url);
             bird.audio.src = url;
             bird.onlyPlay();
             this.count ++;
