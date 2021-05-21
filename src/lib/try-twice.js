@@ -33,6 +33,10 @@ export const Twice = {
             bird.audio.src = url;
             bird.onlyPlay();
             this.count ++;
+        } else {
+            this.count = 0;
+            bird.srcIndex++;
+            bird.play();
         }
     }
 };

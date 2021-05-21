@@ -93,12 +93,18 @@
                 player.on('broken', (e) => log('broken: ' + e.url + ' ' + e.msg));
                 player.on('volume', (e) => vol.innerText = e.volume);
                 player.on('load', () => log('load'));
+                player.on('end', () => log('end'));
 
                 click('multi', () => {
                     player.url([
-                        'http://online.sokal.lviv.ua:8000/sokalfm256.mp3',
-                        'http://online.sokal.lviv.ua:8000/sokalfm128.mp3',
-                        'http://online.sokal.lviv.ua:8000/novydvir256.mp3']);
+                        'http://air.radiorecord.ru:805/rr_64',
+                        'http://air.radiorecord.ru:805/rr_128',
+                        // 'http://air2.radiorecord.ru:9003/rr_320',
+
+                        // 'http://online.sokal.lviv.ua:8000/sokalfm256.mp3',
+                        // 'http://online.sokal.lviv.ua:8000/sokalfm128.mp3',
+                        // 'http://online.sokal.lviv.ua:8000/novydvir256.mp3'
+                    ]);
                     player.play();
                 });
 

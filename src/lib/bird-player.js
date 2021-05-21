@@ -1,7 +1,7 @@
 import { isNumeric, convert, animateValue } from '../util/volume';
 import { Twice } from "./try-twice";
 
-/*!
+/*
  * Bird Player
  *  on
  *    wait: ожидание
@@ -12,6 +12,7 @@ import { Twice } from "./try-twice";
  *    stop: плеер остановлен и выгружены url
  *    error: ошибка при воспроизведении
  *    broken[url | msg]: ошибка при воспроизведении
+ *    end: конец потоков
  *    volume[vol]: текущая громкость (0 до 100)
  */
 
@@ -39,8 +40,10 @@ export class BirdPlayer{
         }
 
         this.el = document.getElementById(el);
+
         this.fadeActive = false;
         this.src = [];
+        this.srcIndex = 0;
 
         this.audio = document.createElement('audio');
         this.audio.id = el + "-bird-audio";
@@ -79,11 +82,25 @@ export class BirdPlayer{
         if (this.state === "pause" && this.src.length)
             return this.onlyPlay();
 
-        for (let item of this.src) {
-            this.audio.src = item;
-            console.warn(item);
-            this.onlyPlay(item);
+        if (typeof this.src[this.srcIndex] !== 'undefined') {
+            this.audio.src = this.src[this.srcIndex];
+            this.onlyPlay(this.src[this.srcIndex]);
+        } else {
+            this.srcIndex = 0;
+            this.emit('end');
         }
+
+
+        /*this.src.forEach((e, i) => {
+            console.warn(e);
+            console.warn(i);
+        })*/
+
+       /* for (let item of this.src) {
+            console.warn(item);
+            this.audio.src = item;
+            // this.onlyPlay(item);
+        }*/
     }
 
     /**
@@ -94,7 +111,8 @@ export class BirdPlayer{
             await this.audio.play();
         }
         catch (e) {
-            this.emit('broken', {url: src || this.audio.src, msg: e});
+            let url = src || this.audio.src;
+            this.emit('broken', {url: url, msg: e});
         }
     }
 
