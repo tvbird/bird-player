@@ -14,6 +14,7 @@ import { Twice } from "./try-twice";
  *    broken[url | msg]: ошибка при воспроизведении
  *    end: конец потоков
  *    volume[vol]: текущая громкость (0 до 100)
+ *    autodisabled:  автовоспроизведение не работает
  */
 
 export class BirdPlayer{
@@ -21,10 +22,11 @@ export class BirdPlayer{
     /**
      * Конструктор
      *
-     * el        - id
-     * volume    - громкость
-     * src       - потоки
-     * twice     - пробовать воспроизвести поток дважды (если была ошибка)
+     * el               - id
+     * volume           - громкость
+     * src              - потоки
+     * autoplay[false]  - Автовоспроизведение
+     * twice            - пробовать воспроизвести поток дважды (если была ошибка)
      */
     constructor(params){
 
@@ -40,6 +42,8 @@ export class BirdPlayer{
         this.el = document.getElementById(el);
 
 
+        // this.autoplay = false;    // Автовоспроизведение
+
         this.src = [];            // Потоки
         this.srcIndex = 0;        // Индекс текущего потока
         this.buffer = 0;          // Загруженные данные
@@ -49,18 +53,21 @@ export class BirdPlayer{
         this.audio.id = el + "-bird-audio";
         this.audio.volume = convert((params && params.volume) ? params.volume : 100);
 
-        if (params && params.src)
-            this.url(params.src);
+        if (params) {
+            // if (params.autoplay)
+            //     this.autoplay = params.autoplay;
+
+            if (params.src)
+                this.url(params.src);
+        }
+
 
         this.__bind();
 
         // Инициализация плагинов
         this.Twice = Twice.init(this.el, params, this);
-        this.on('pause stop error', () => {
-            this.buffer = -1;
-            console.warn(this.buffer);
-        });
 
+        this.on('pause stop error', () => this.buffer = -1);
         this.emit('wait');
     }
 
@@ -76,6 +83,15 @@ export class BirdPlayer{
             this.src.push(list);
         else
             this.src = list;
+
+       /* if (this.autoplay) {
+            let promise = this.play();
+            if (promise !== undefined)
+                promise.catch(error => {
+                    console.warn('zxczxc');
+                    this.emit('autodisabled', error)
+                });
+        }*/
     }
 
     /**
