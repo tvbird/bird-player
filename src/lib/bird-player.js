@@ -18,8 +18,6 @@ import { Twice } from "./try-twice";
 
 export class BirdPlayer{
 
-    // TODO Timeout
-
     /**
      * Конструктор
      *
@@ -41,9 +39,11 @@ export class BirdPlayer{
 
         this.el = document.getElementById(el);
 
-        this.fadeActive = false;
-        this.src = [];
-        this.srcIndex = 0;
+
+        this.src = [];            // Потоки
+        this.srcIndex = 0;        // Индекс текущего потока
+        this.buffer = 0;          // Загруженные данные
+        this.fadeActive = false;  // Включение плавного увеличения звука
 
         this.audio = document.createElement('audio');
         this.audio.id = el + "-bird-audio";
@@ -55,10 +55,13 @@ export class BirdPlayer{
         this.__bind();
 
         // Инициализация плагинов
-        Twice.init(this.el, params, this);
+        this.Twice = Twice.init(this.el, params, this);
+        this.on('pause stop error', () => {
+            this.buffer = -1;
+            console.warn(this.buffer);
+        });
 
         this.emit('wait');
-        setTimeout(() => this.getVolume(), 3000);
     }
 
     /**
@@ -66,6 +69,7 @@ export class BirdPlayer{
      * @param list
      */
     url(list) {
+        this.buffer = -1;
         this.src = [];
 
         if (typeof list === 'string')
@@ -84,23 +88,11 @@ export class BirdPlayer{
 
         if (typeof this.src[this.srcIndex] !== 'undefined') {
             this.audio.src = this.src[this.srcIndex];
-            this.onlyPlay(this.src[this.srcIndex]);
+            return this.onlyPlay(this.src[this.srcIndex]);
         } else {
             this.srcIndex = 0;
             this.emit('end');
         }
-
-
-        /*this.src.forEach((e, i) => {
-            console.warn(e);
-            console.warn(i);
-        })*/
-
-       /* for (let item of this.src) {
-            console.warn(item);
-            this.audio.src = item;
-            // this.onlyPlay(item);
-        }*/
     }
 
     /**
@@ -194,7 +186,9 @@ export class BirdPlayer{
      * @param call
      */
     on(name, call) {
-        this.el.addEventListener(name, (e) => call(e.detail || e));
+        name.split(' ').forEach(event => {
+            this.el.addEventListener(event, (e) => call(e.detail || e));
+        });
     }
 
 
@@ -225,6 +219,10 @@ export class BirdPlayer{
         this.audio.addEventListener('volumechange', () => {
             if (!this.fadeActive)
                 this.emit('volume', {volume: convert(this.audio.volume, true)});
+        });
+        this.audio.addEventListener('progress', () => {
+            this.buffer++;
+            this.emit('progress', {buffer: this.buffer});
         });
     }
 

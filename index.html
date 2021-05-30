@@ -86,9 +86,8 @@
                 player.on('wait', () => log('wait'));
                 player.on('pause', () => log('pause'));
                 player.on('stop', () => log('stop'));
-                player.on('time', () => log('time'));
+                player.on('progress', (e) => log(e.buffer || ''));
                 player.on('play', (e) => log('play: ' + e.url));
-                player.on('progress', () => log(progress));
                 player.on('error', () => log('error'));
                 player.on('broken', (e) => log('broken: ' + e.url + ' ' + e.msg));
                 player.on('volume', (e) => vol.innerText = e.volume);
