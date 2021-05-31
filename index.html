@@ -77,9 +77,9 @@
                 let player = new BirdPlayer({
                     el: 'player',
                     volume: 70,
-                    src: ['https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_1MG.mp3'],
+                    src: ['http://air.radiorecord.ru:805/rr_320'],
                     twice: true,
-                    // autoplay: true
+                    autoplay: true
                 });
 
                 const vol = document.getElementById('vol');
@@ -94,16 +94,16 @@
                 player.on('volume', (e) => vol.innerText = e.volume);
                 player.on('load', () => log('load'));
                 player.on('end', () => log('end'));
-                /*player.on('autodisabled', () => {
+                player.on('autodisabled', () => {
                     log('автовоспроизведение не работает');
                     console.warn('xzcvsd');
-                });*/
+                });
  
                 click('multi', () => {
                     player.url([
                         'http://air.radiorecord.ru:805/rr_64',
                         'http://air.radiorecord.ru:805/rr_128',
-                        // 'http://air2.radiorecord.ru:9003/rr_320',
+                        'http://air2.radiorecord.ru:9003/rr_320',
 
                         // 'http://online.sokal.lviv.ua:8000/sokalfm256.mp3',
                         // 'http://online.sokal.lviv.ua:8000/sokalfm128.mp3',

@@ -29,7 +29,6 @@ export class BirdPlayer{
      * twice            - пробовать воспроизвести поток дважды (если была ошибка)
      */
     constructor(params){
-
         const ID = 'bird-player';
         let el = (params && params.el) ? params.el : ID;
         if (el === ID && !document.getElementById(ID)) {
@@ -41,21 +40,21 @@ export class BirdPlayer{
 
         this.el = document.getElementById(el);
 
-
-        // this.autoplay = false;    // Автовоспроизведение
+        this.autoplay = false;    // Автовоспроизведение
 
         this.src = [];            // Потоки
         this.srcIndex = 0;        // Индекс текущего потока
         this.buffer = 0;          // Загруженные данные
         this.fadeActive = false;  // Включение плавного увеличения звука
+        this.isFirefox  = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;  // Если браузер Firefox
 
         this.audio = document.createElement('audio');
         this.audio.id = el + "-bird-audio";
         this.audio.volume = convert((params && params.volume) ? params.volume : 100);
 
         if (params) {
-            // if (params.autoplay)
-            //     this.autoplay = params.autoplay;
+            if (params.autoplay)
+                this.autoplay = params.autoplay;
 
             if (params.src)
                 this.url(params.src);
@@ -80,18 +79,45 @@ export class BirdPlayer{
         this.src = [];
 
         if (typeof list === 'string')
-            this.src.push(list);
-        else
-            this.src = list;
+            list = [list];
 
-       /* if (this.autoplay) {
-            let promise = this.play();
-            if (promise !== undefined)
-                promise.catch(error => {
-                    console.warn('zxczxc');
-                    this.emit('autodisabled', error)
-                });
-        }*/
+        this.src = this.prepare(list);
+
+        if (this.autoplay) {
+            this.play();
+        }
+        
+        /* if (this.autoplay) {
+             let promise = this.play();
+             if (promise !== undefined)
+                 promise.catch(error => {
+                     console.warn('zxczxc');
+                     this.emit('autodisabled', error)
+                 });
+         }*/
+    }
+
+    /**
+     *  Подготовка Url
+     *
+     * @param urls
+     * @returns {[]}
+     */
+    prepare(urls) {
+        let out = [];
+
+        urls.forEach(e => {
+            if (this.isFirefox) {  // Исправление ошибки в Firefox
+                let url = new URL(e);
+                url.searchParams.append('_', new Date().getTime());
+                e = url.href;
+            }
+
+            out.push(e);
+        });
+
+
+        return out;
     }
 
     /**
