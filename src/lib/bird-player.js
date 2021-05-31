@@ -86,7 +86,7 @@ export class BirdPlayer{
         if (this.autoplay) {
             this.play();
         }
-        
+
         /* if (this.autoplay) {
              let promise = this.play();
              if (promise !== undefined)
@@ -145,8 +145,15 @@ export class BirdPlayer{
             await this.audio.play();
         }
         catch (e) {
-            let url = src || this.audio.src;
-            this.emit('broken', {url: url, msg: e});
+            if (e.toString().indexOf("didn't interact") > -1) {
+                this.emit('autodisabled');
+                this.stop();
+            } else {
+                if (e.toString().indexOf("new load request") === -1) {
+                    let url = src || this.audio.src;
+                    this.emit('broken', {url: url, msg: e});
+                }
+            }
         }
     }
 
@@ -155,7 +162,7 @@ export class BirdPlayer{
      * Пауза
      */
     pause() {
-        if (this.__isReady())
+        // if (this.__isReady())
             this.audio.pause();
     }
 
@@ -164,13 +171,13 @@ export class BirdPlayer{
      * Остановка плеера с выгрузкой потоков
      */
     stop() {
-        if (this.__isReady()) {
+        // if (this.__isReady()) {
             this.audio.pause();
             this.audio.removeAttribute('src');
             this.audio.load();
 
             this.emit('stop');
-        }
+        // }
     }
 
     /**
