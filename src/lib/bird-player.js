@@ -241,9 +241,9 @@ export class BirdPlayer{
     }
 
 
-    __isReady() {
+    /*__isReady() {
         return this.audio.src && this.audio.readyState > 0;
-    }
+    }*/
 
     /**
      * Перенаправление событий в emit
