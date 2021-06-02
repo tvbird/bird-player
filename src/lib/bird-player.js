@@ -5,7 +5,8 @@ import { Twice } from "./try-twice";
  * Bird Player
  *  on
  *    wait: ожидание
- *    load: загрука
+ *    load: загрука плеера
+ *    url : загружены новые потоки для прослушивания
  *    play[url]: плеер включен
  *    time: идет воспроизведение (Отправляется, когда изменяется значение атрибута currentTime)
  *    pause: пауза
@@ -41,11 +42,11 @@ export class BirdPlayer{
         this.el = document.getElementById(el);
 
         this.autoplay = false;    // Автовоспроизведение
+        this.fadeActive = false;  // Включение плавного увеличения звука
 
         this.src = [];            // Потоки
         this.srcIndex = 0;        // Индекс текущего потока
         this.buffer = 0;          // Загруженные данные
-        this.fadeActive = false;  // Включение плавного увеличения звука
         this.isFirefox  = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;  // Если браузер Firefox
 
         this.audio = document.createElement('audio');
@@ -60,7 +61,6 @@ export class BirdPlayer{
                 this.url(params.src);
         }
 
-
         this.__bind();
 
         // Инициализация плагинов
@@ -71,30 +71,31 @@ export class BirdPlayer{
     }
 
     /**
+     * Сброс установленных параметров
+     */
+    reset() {
+        console.warn(this.Twice);
+        this.src = [];
+        this.srcIndex = 0;
+        this.buffer = -1;
+
+        this.clearAudio();
+    }
+
+    /**
      * Загрузка потоков
      * @param list
      */
     url(list) {
-        this.buffer = -1;
-        this.src = [];
-
+        this.reset();
         if (typeof list === 'string')
             list = [list];
 
         this.src = this.prepare(list);
+        this.emit('url', this.src);
 
-        if (this.autoplay) {
+        if (this.autoplay)
             this.play();
-        }
-
-        /* if (this.autoplay) {
-             let promise = this.play();
-             if (promise !== undefined)
-                 promise.catch(error => {
-                     console.warn('zxczxc');
-                     this.emit('autodisabled', error)
-                 });
-         }*/
     }
 
     /**
@@ -162,8 +163,15 @@ export class BirdPlayer{
      * Пауза
      */
     pause() {
-        // if (this.__isReady())
-            this.audio.pause();
+        this.audio.pause();
+    }
+
+
+
+    clearAudio() {
+        this.audio.pause();
+        this.audio.removeAttribute('src');
+        this.audio.load();
     }
 
 
@@ -171,13 +179,8 @@ export class BirdPlayer{
      * Остановка плеера с выгрузкой потоков
      */
     stop() {
-        // if (this.__isReady()) {
-            this.audio.pause();
-            this.audio.removeAttribute('src');
-            this.audio.load();
-
-            this.emit('stop');
-        // }
+        this.clearAudio();
+        this.emit('stop');
     }
 
     /**

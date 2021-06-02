@@ -10,6 +10,12 @@ export const Twice = {
     url: '',
     count: 0,
 
+    reset() {
+        this.active = true;
+        this.url = '';
+        this.count = 0;
+    },
+
     init(el, params, bird) {
         if (!this.active)
             return false;
@@ -17,9 +23,18 @@ export const Twice = {
         if (params && typeof params.twice !== 'undefined')
             this.active = params.twice;
 
+        el.addEventListener('url', () => this.reset());
         el.addEventListener('stop', () => {this.count = 0});
         el.addEventListener('play', () => {this.count = 100});
-        el.addEventListener('broken', (e) => fibonacci(1, () => this.check(bird, e.detail.url)));
+        el.addEventListener('broken', (e) => {
+            let msg = e.detail.msg.name || '';
+            if (msg.toLocaleLowerCase() === 'notsupportederror')
+                this.count++;
+
+            fibonacci(1, () => this.check(bird, e.detail.url))
+        });
+
+        return this;
     },
 
     check(bird, url) {
