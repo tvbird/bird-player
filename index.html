@@ -79,7 +79,7 @@
                     volume: 50,
                     src: ['http://air.radiorecord.ru:805/rr_320'],
                     twice: true,
-                    autoplay: true
+                    // autoplay: true
                 });
 
                 const vol = document.getElementById('vol');
@@ -92,7 +92,7 @@
                 player.on('error', () => log('error'));
                 player.on('broken', (e) => log('broken: ' + e.url + ' ' + e.msg));
                 player.on('volume', (e) => vol.innerText = e.volume);
-                player.on('load', () => log('load'));
+                player.on('load', () => log(`load: ` + player.audio.src));
                 player.on('end', () => log('end'));
                 player.on('autodisabled', () => {
                     log('автовоспроизведение не работает');
@@ -100,10 +100,11 @@
 
                 click('err', () => {
                     clearLog();
-                    // player.url('http://24.168.80.124:8098/674f9b7c-916F68FC-27BB-498F-8A6B-6419ACF6B378');
+                    player.url('http://24.168.80.124:8098/674f9b7c-916F68FC-27BB-498F-8A6B-6419ACF6B378');
                     // player.url('http://pla01.cdn.eurozet.pl:8218/PLATRA.mp3');  // TODO Дикий таймаут
-                    player.url('http://stream.161fm.ru:8000/256');
-                    // player.play();
+                    // player.url('http://stream.161fm.ru:8000/256');
+                    console.warn(`load:` + player.load);
+                    player.play();
                 });
  
                 click('multi', () => {
@@ -116,7 +117,8 @@
                         // 'http://online.sokal.lviv.ua:8000/sokalfm128.mp3',
                         // 'http://online.sokal.lviv.ua:8000/novydvir256.mp3'
                     ]);
-                    // player.play();
+                    console.warn(`load:` + player.load);
+                    player.play();
                 });
 
 

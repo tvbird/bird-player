@@ -38,7 +38,8 @@ export const Twice = {
     },
 
     check(bird, url) {
-        if (!this.active)
+        console.warn(bird.load);
+        if (!this.active || (bird.load))
             return false;
 
         if (this.url !== url)
@@ -47,7 +48,7 @@ export const Twice = {
         if (this.count < 1) {
             bird.audio.src = url;
             bird.onlyPlay();
-            this.count ++;
+            this.count++;
         } else {
             this.count = 0;
             bird.srcIndex++;

@@ -44,6 +44,7 @@ export class BirdPlayer{
         this.autoplay = false;    // Автовоспроизведение
         this.fadeActive = false;  // Включение плавного увеличения звука
 
+        this.load = false;        // Загружается ли поток прямо сейчас
         this.src = [];            // Потоки
         this.srcIndex = 0;        // Индекс текущего потока
         this.buffer = 0;          // Загруженные данные
@@ -65,8 +66,6 @@ export class BirdPlayer{
 
         // Инициализация плагинов
         this.Twice = Twice.init(this.el, params, this);
-
-        this.on('pause stop error', () => this.buffer = -1);
         this.emit('wait');
     }
 
@@ -74,7 +73,6 @@ export class BirdPlayer{
      * Сброс установленных параметров
      */
     reset() {
-        console.warn(this.Twice);
         this.src = [];
         this.srcIndex = 0;
         this.buffer = -1;
@@ -146,11 +144,13 @@ export class BirdPlayer{
             await this.audio.play();
         }
         catch (e) {
-            if (e.toString().indexOf("didn't interact") > -1) {
+            console.warn(e);
+            let msg = e.toString();
+            if (msg.indexOf("didn't interact") > -1) {
                 this.emit('autodisabled');
                 this.stop();
             } else {
-                if (e.toString().indexOf("new load request") === -1) {
+                if (msg.indexOf("new load request") === -1 && msg.indexOf("call to pause") === -1 && msg.indexOf("user aborted") === -1) {
                     let url = src || this.audio.src;
                     this.emit('broken', {url: url, msg: e});
                 }
@@ -243,11 +243,6 @@ export class BirdPlayer{
         });
     }
 
-
-    /*__isReady() {
-        return this.audio.src && this.audio.readyState > 0;
-    }*/
-
     /**
      * Перенаправление событий в emit
      * @private
@@ -267,15 +262,25 @@ export class BirdPlayer{
                 this.audio.addEventListener(key, () => this.emit(value));
             }
         });
-        this.audio.addEventListener('playing', () => this.emit('play', {url: this.audio.src}));
+
+        this.audio.addEventListener('playing', () => {
+            this.emit('play', {url: this.audio.src});
+            this.load = false;
+        });
+
         this.audio.addEventListener('volumechange', () => {
             if (!this.fadeActive)
                 this.emit('volume', {volume: convert(this.audio.volume, true)});
         });
+
         this.audio.addEventListener('progress', () => {
             this.buffer++;
             this.emit('progress', {buffer: this.buffer});
         });
+
+        this.on('load', () => this.load = true);
+        this.on('pause stop error', () => this.buffer = -1);
+        this.on('pause stop broken', () => this.load = false);
     }
 
     /*  // loadedmeta
