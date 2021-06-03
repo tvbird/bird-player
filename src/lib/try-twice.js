@@ -38,7 +38,6 @@ export const Twice = {
     },
 
     check(bird, url) {
-        console.warn(bird.load);
         if (!this.active || (bird.load))
             return false;
 

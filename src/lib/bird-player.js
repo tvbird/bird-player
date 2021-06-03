@@ -144,7 +144,6 @@ export class BirdPlayer{
             await this.audio.play();
         }
         catch (e) {
-            console.warn(e);
             let msg = e.toString();
             if (msg.indexOf("didn't interact") > -1) {
                 this.emit('autodisabled');
